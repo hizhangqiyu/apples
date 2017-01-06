@@ -1,38 +1,68 @@
-#!/home/utils/perl-5.18/5.18.4-003/bin/perl
 
-use strict;
-use warnings;
+import os
+import sys
+import optparse
+import re
+import time
+
+def GetOptions():
+    parser = optparse.OptionParser()
+    parser.add_option('-o', '--output',
+                      dest="output",
+                      help="output path for new logs",
+                      )
+    parser.add_option('-l', '--list',
+                      dest="list",
+                      help="the file contian logs list",
+                      )
+    options, remainder = parser.parse_args()
+    return options
+
+# do the replace
+def Replace(pattern, string):
+    StrCnt = pattern.subn(r' ', string)
+    while StrCnt[1] != 0:
+        StrCnt = pattern.subn(r' ', StrCnt[0])
+
+    return StrCnt[0]
+
+def GetCurrentTime():
+    return time.strftime("[%Y-%m-%d %H:%M:%S]", time.localtime())
+
+def main():
+    options = GetOptions()
+
+    hLogFileList  = open(options.list, "r")
+
+    # all the match replacePattern
+    replacePattern = re.compile(r"""\/[0-9a-zA-Z.-_+/]+\/?      # path
+                                |                               # other pattern
+                            """, re.X)
+
+    counter = 0
+    for logFile in hLogFileList:
+        logFile = logFile.rstrip('\n')
+        hLogFile = open(logFile, "r")
+        counter = counter + 1
+
+        os.system('mkdir -p ' + options.output)
+        newLogFileName = os.path.basename(logFile)
+        hNewLogFile = open(options.output + '/' + newLogFileName, 'w')
+
+        print(GetCurrentTime()),
+        print("Generating new [%d] %s" % (counter ,newLogFileName))
+
+        allLines = hLogFile.readlines()
+        for oneLine in allLines:
+            newLine = Replace(replacePattern, oneLine)
+            if not re.match(r'^\s+$', newLine):
+                hNewLogFile.writelines(newLine)
+
+        hLogFile.close()
+        hNewLogFile.close()
+
+    hLogFileList.close()
 
 
-my $filename = 'undef';
-GetOptions("file=s" => \$filename);
-
-my $data = read_file($filename);
-
-# replace original_string and new_string before running this script
-# you can repeat below code to replace mutiple strings at one time.
-$data =~ ( s/<original_string>/<new_string>/g);
-
-write_file($filename, $data);
-exit;
-
-sub read_file {
-    my ($filename) = @_;
-
-    open my $in, '<:encoding(UTF-8)', $filename or die "Could not open '$filename' for reading $!";
-    local $/ = undef;
-    my $all = <$in>;
-    close $in;
-
-    return $all;
-}
-
-sub write_file {
-    my ($filename, $content) = @_;
-
-    open my $out, '>:encoding(UTF-8)', $filename or die "Could not open '$filename' for writing $!";;
-    print $out $content;
-    close $out;
-
-    return;
-}
+if __name__ == "__main__":
+    sys.exit(main())
