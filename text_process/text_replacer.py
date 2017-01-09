@@ -34,7 +34,7 @@ def main():
 
     hLogFileList  = open(options.list, "r")
 
-    # all the match replacePattern
+    # all the match pattern
     replacePattern = re.compile(r"""\/[0-9a-zA-Z.-_+/]+\/?      # path
                                 |                               # other pattern
                             """, re.X)
