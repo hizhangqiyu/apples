@@ -1,5 +1,5 @@
 # apples
-----------------
+
 ## Usage
 * text_process
 	* perl text_replacer.pl --file \<log file\>
