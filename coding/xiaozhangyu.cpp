@@ -7,7 +7,7 @@
 #include <iomanip>
 
 std::vector<float> result;
-std::vector<float> indices;
+int maxLength = 0;
 bool isSumZero(const std::vector<float>& v)
 {
     float sum = 0;
@@ -25,9 +25,14 @@ void findSumZero(const std::vector<float>& in, float i)
 
     if(isSumZero(result))
     {
-        for(auto v : result)
-            std::cout << std::fixed << std::setprecision(2) << v << ",";
-        std::cout << std::endl;
+        if(maxLength < result.size())
+        {
+            std::cout << "length:" << result.size() << std::endl;
+            for(auto v : result)
+                std::cout << std::fixed << std::setprecision(2) << v << ",";
+            std::cout << std::endl;
+            maxLength = result.size();
+        }
     }
     result.push_back(in[i]);
     findSumZero(in, i-1);
@@ -49,13 +54,13 @@ int main()
         in.push_back(value);
     }
     for(auto v : in)
-        std::cout << v << " ";
+        std::cout << std::fixed << std::setprecision(2) << v << " ";
     std::cout << std::endl;
     std::cout << "Total=" << in.size() << std::endl;
     findSumZero(in, in.size() - 1);
 
-    std::ofstream output;
-    output.open("output.csv", std::ios::out);
+//    std::ofstream output;
+//    output.open("output.csv", std::ios::out);
 
     return 0;
 }
