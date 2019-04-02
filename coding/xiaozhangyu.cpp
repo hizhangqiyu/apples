@@ -6,6 +6,7 @@
 #include <string>
 #include <iomanip>
 
+const float EPSINON = 0.0001;
 std::vector<float> result;
 std::vector<float> indices;
 bool isSumZero(const std::vector<float>& v)
@@ -15,10 +16,10 @@ bool isSumZero(const std::vector<float>& v)
     {
         sum += n;
     }
-    return (sum == 0 && !v.empty());
+    return (sum >= -EPSINON && sum <= EPSINON && !v.empty());
 }
 
-void findSumZero(const std::vector<float>& in, float i)
+void findSumZero(const std::vector<float>& in, int i)
 {
     if(i < 0)
         return;
